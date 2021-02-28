@@ -1,0 +1,24 @@
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.ui.container {
+    display: flex;
+}
+.ticket-information{
+    width: 10%;
+}
+#label-dashed {
+    display: inline-block;
+    color: #db2828;
+    border-bottom: 1px dashed rgb(124, 122, 122);
+}
+.ui.form .fields, .ui.form .field {
+    margin-top: 30px;
+}
+.ui.form .field>label {
+    color: #db2828;
+}
