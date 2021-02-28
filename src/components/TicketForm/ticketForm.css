@@ -22,3 +22,6 @@ input::-webkit-inner-spin-button {
 .ui.form .field>label {
     color: #db2828;
 }
+.left-block {
+    width: 70%;
+}

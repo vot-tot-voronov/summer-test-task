@@ -1,5 +1,8 @@
 import React from 'react'
-import { Container, Form, Input, Select, Header} from 'semantic-ui-react'
+import { Container, Form, Input, Select, Header, Button} from 'semantic-ui-react'
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
 import './ticketForm.css'
 
 const genderOptions = [
@@ -18,62 +21,75 @@ const rateOptions = [
     { key: 's', text: 'Стандартный', value: 'standart' }
 ]
 
+const schema = yup.object().shape({
+    lastName: yup
+        .string()
+        .matches(/^([^0-9]*)$/, "Это поле не должно содержать цифры")
+        .required("Это поле обязательно"),
+    firstName: yup
+        .string()
+        .matches(/^([^0-9]*)$/, "Это поле не должно содержать цифры")
+        .required("Это поле обязательно"),
+    middleName: yup
+        .string()
+        .matches(/^([^0-9]*)$/, "Это поле не должно содержать цифры")
+})
+
 export const TicketForm = () => {
-    
+    const {register, handleSubmit, errors, control} = useForm({
+        mode: "onBlur",
+        resolver: yupResolver(schema)
+    });
+    const submitForm = (data) => {
+        console.log(data);
+    }
     return (
         <Container>
-            <Form>
+            <div className="left-block">
+            <Form onSubmit={handleSubmit(submitForm)}>
                 <Header as="h1" color="red">Пассажир №1</Header>
-                <Form.Field id="snils_csm" name="snils_csm" width={6}>
+                {/* <Form.Field error={!!errors.name}>
+                    <label htmlFor="name">Name</label>
+                    <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    ref={register({ required: "Recipe name is required." })}
+                    />
+                </Form.Field> */}
+                <Form.Field
+                    id="snils_csm" 
+                    name="snils_csm" 
+                    width={6}>
                     <label id="label-dashed">СНИЛС или номер регистрации ЦСМ</label>
                     <Input type="number" />
                 </Form.Field>
-                <Form.Group widths='equal'>
-                    {/* <Form.Field required
-                        id='last-name'
-                        name='last-name'
-                        control={Input}
-                        label='Фамилия'
-                    />
-                    <Form.Field required
-                        id='first-name'
-                        name='first-name'
-                        control={Input}
-                        label='Имя'
-                    />
-                    <Form.Field required
-                        id='middle-name'
-                        name='middle-name'
-                        control={Input}
-                        label='Отчество (обязательно, при наличии)'
-                    /> */}
-                    <Form.Field 
+                <Form.Group widths="equal">
+                    <Form.Field
                         required
-                        id='last-name'
-                        name='last-name'>
+                        id='lastName'
+                        error={!!errors?.lastName}>
                         <label>Фамилия</label>
-                        <Input type="text" />
+                        <Controller control={control} defaultValue="" name='lastName' as={Input}/>
+                        <span>{errors?.lastName?.message}</span>
+                        
                     </Form.Field>
-                    <Form.Field 
-                        required
-                        id='first-name'
-                        name='first-name'>
+                    <Form.Field
+                        id='firstName'
+                        error={!!errors?.firstName}>
                         <label>Имя</label>
-                        <Input type="text" />
+                        <Controller control={control} defaultValue="" name='firstName' as={Input}/>
+                        {errors?.firstName?.message}
                     </Form.Field>
-                    <Form.Field 
-                        id='middle-name'
-                        name='middle-name'>
+                    <Form.Field
+                        id='middleName'
+                        error={!!errors?.middleName}>
                         <label id="label-dashed">Отчество (обязательно, при наличии)</label>
-                        <Input type="text" />
+                        <Controller control={control} defaultValue="" name='middleName' as={Input}/>
+                        {errors?.middleName?.message}
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths='equal'>
-                    {/* <Form.Field name='gender' required
-                        control={Select}
-                        options={genderOptions}
-                        label="Пол"
-                    /> */}
                     <Form.Field
                         required
                         id="gender"
@@ -97,11 +113,6 @@ export const TicketForm = () => {
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths='equal'>
-                    {/* <Form.Field name='gender' required
-                        control={Select}
-                        options={genderOptions}
-                        label="Пол"
-                    /> */}
                     <Form.Field
                         required
                         id="document"
@@ -124,11 +135,11 @@ export const TicketForm = () => {
                         <Select options={rateOptions}/>
                     </Form.Field>
                 </Form.Group>
+                <Form.Field>
+                    <Button>Save</Button>
+                </Form.Field>
             </Form>
-            <div className="ticket-information">
-
             </div>
-            
             
         </Container>
     )

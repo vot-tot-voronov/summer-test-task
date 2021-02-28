@@ -3,8 +3,8 @@ import {TicketForm} from './TicketForm/TicketForm'
 
 export const App = () => {
     return (
-        <div>
+        <>
             <TicketForm />
-        </div>
+        </>
     )
 }
