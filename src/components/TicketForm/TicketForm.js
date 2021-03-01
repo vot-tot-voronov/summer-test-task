@@ -1,8 +1,6 @@
 import React from 'react'
-import { Container, Form, Input, Select, Header, Button} from 'semantic-ui-react'
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from "yup";
+import { Container, Form, Input, Select, Header, Ref, Dropdown, Button} from 'semantic-ui-react'
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import './ticketForm.css'
 
 const genderOptions = [
@@ -21,24 +19,25 @@ const rateOptions = [
     { key: 's', text: 'Стандартный', value: 'standart' }
 ]
 
-const schema = yup.object().shape({
-    lastName: yup
-        .string()
-        .matches(/^([^0-9]*)$/, "Это поле не должно содержать цифры")
-        .required("Это поле обязательно"),
-    firstName: yup
-        .string()
-        .matches(/^([^0-9]*)$/, "Это поле не должно содержать цифры")
-        .required("Это поле обязательно"),
-    middleName: yup
-        .string()
-        .matches(/^([^0-9]*)$/, "Это поле не должно содержать цифры")
-})
-
 export const TicketForm = () => {
-    const {register, handleSubmit, errors, control} = useForm({
-        mode: "onBlur",
-        resolver: yupResolver(schema)
+    React.useEffect(() => {
+        //register({ name: 'lastName'}, { required: "Это поле обязательно" });
+        register({ name: 'firstName'}, { required: "Это поле обязательно" });
+        register({ name: 'middleName'});
+        //register({ name: "gender" }, { required: "Это поле обязательно" });
+        register({ name: "birth" }, { required: "Это поле обязательно" });
+        register({ name: "citizenship" }, { required: "Это поле обязательно" });
+        register({ name: "document" }, { required: "Это поле обязательно" });
+        register({ name: "documentNumber" }, { required: "Это поле обязательно" });
+        register({ name: "rate" }, { required: "Это поле обязательно" });
+      }, []);
+    const {register, handleSubmit, errors, setValue, trigger, control} = useForm({
+        mode: 'onBlur'
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        name: "passangers",
+        control
     });
     const submitForm = (data) => {
         console.log(data);
@@ -46,93 +45,189 @@ export const TicketForm = () => {
     return (
         <Container>
             <div className="left-block">
-            <Form onSubmit={handleSubmit(submitForm)}>
+            <Form noValidate onSubmit={handleSubmit(submitForm)}>
                 <Header as="h1" color="red">Пассажир №1</Header>
-                {/* <Form.Field error={!!errors.name}>
-                    <label htmlFor="name">Name</label>
-                    <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    ref={register({ required: "Recipe name is required." })}
-                    />
-                </Form.Field> */}
                 <Form.Field
                     id="snils_csm" 
                     name="snils_csm" 
                     width={6}>
                     <label id="label-dashed">СНИЛС или номер регистрации ЦСМ</label>
-                    <Input type="number" />
+                    <input type="text" name="snils_csm" id="snils_csm" ref={register} />
                 </Form.Field>
                 <Form.Group widths="equal">
                     <Form.Field
                         required
                         id='lastName'
                         error={!!errors?.lastName}>
+                        {/* <Form.Input
+                            required
+                            name="lastName"
+                            label="Фамилия"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                                await trigger(name)
+                            }}
+                        /> */}
                         <label>Фамилия</label>
-                        <Controller control={control} defaultValue="" name='lastName' as={Input}/>
+                        <Controller 
+                            required
+                            rules={{required: "Это поле обязательно"}} 
+                            name="lastName"
+                            control={control} 
+                            defaultValue="" as={Input}/>
                         <span>{errors?.lastName?.message}</span>
-                        
                     </Form.Field>
                     <Form.Field
                         id='firstName'
                         error={!!errors?.firstName}>
-                        <label>Имя</label>
-                        <Controller control={control} defaultValue="" name='firstName' as={Input}/>
+                        <Form.Input
+                            required
+                            name="firstName"
+                            label="Имя"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                                await trigger(name)
+                            }}
+                        />
+                        {/* <label>Имя</label>
+                        <Controller rules={{required: "Это поле обязательно"}} control={control} defaultValue="" name='firstName' as={Input}/> */}
                         {errors?.firstName?.message}
                     </Form.Field>
                     <Form.Field
-                        id='middleName'
-                        error={!!errors?.middleName}>
-                        <label id="label-dashed">Отчество (обязательно, при наличии)</label>
-                        <Controller control={control} defaultValue="" name='middleName' as={Input}/>
-                        {errors?.middleName?.message}
+                        id='middleName'>
+                        <Form.Input
+                            name="middleName"
+                            label="Отчество (обязательно, при наличии)"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                            }}
+                        />
+                        {/* <Controller control={control} defaultValue="" name='middleName' as={Input}/> */}
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths='equal'>
                     <Form.Field
                         required
+                        error={!!errors?.gender}
                         id="gender"
-                        name="gender">
-                        <label>Пол</label>
-                        <Select options={genderOptions}/>
+                        >
+                        {/* <Form.Select
+                            required
+                            name="gender"
+                            options={genderOptions}
+                            label="Выберите пол"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                                await trigger(name);
+                            }}
+                        /> */}
+                        <label>Выберите пол</label>
+                        <Controller
+                            required
+                            rules={{required: "Это поле обязательно"}} 
+                            name="gender"
+                            defaultValue=""
+                            control={control}
+                            render={({onChange}) => (
+                            <Form.Select 
+                            name="gender"
+                                onChange={async(e, { name, value }) => {
+                                    console.log(name, value)
+                                    setValue(name, value)
+                                }}
+                                options={genderOptions}/>
+                            )}
+                        />
+                        {/* <Dropdown 
+                            ref={register}
+                            name="gender"
+                            onChange={(e, { name, value }) => {
+                                console.log(value)
+                                setValue(name, value)
+                            }} 
+                            selection
+                            options={genderOptions}/> */}
+                        <span>{errors?.gender?.message}</span>
                     </Form.Field>
                     <Form.Field
-                        required
                         id="birth"
-                        name="birth">
-                        <label>Дата рождения</label>
-                        <Input placeholder="__-__-____"/>
+                        error={!!errors?.birth}>
+                        <Form.Input
+                            required
+                            name="birth"
+                            label="Дата рождения"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                                await trigger(name)
+                            }}
+                        />
+                        {errors?.birth?.message}
+                        {/* <label>Дата рождения</label>
+                        <Input placeholder="__-__-____"/> */}
                     </Form.Field>
                     <Form.Field
-                        required
-                        id="citizenship"
-                        name="citizenship">
-                        <label>Гражданство</label>
-                        <Select options={citizenship}/>
+                        error={!!errors?.citizenship}
+                        id="citizenship">
+                        <Form.Select
+                            required
+                            name="citizenship"
+                            options={citizenship}
+                            label="Гражданство"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                                await trigger(name);
+                            }}
+                        />
+                        <span>{errors?.citizenship?.message}</span>
                     </Form.Field>
                 </Form.Group>
                 <Form.Group widths='equal'>
                     <Form.Field
-                        required
-                        id="document"
-                        name="document">
-                        <label>Тип документа</label>
-                        <Select options={typeOfDocument}/>
+                        error={!!errors?.document}
+                        id="document">
+                        <Form.Select
+                            required
+                            name="document"
+                            options={typeOfDocument}
+                            label="Тип документа"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                                await trigger(name);
+                            }}
+                        />
+                        <span>{errors?.document?.message}</span>
                     </Form.Field>
                     <Form.Field
-                        required
-                        id="document-number"
-                        name="document-number">
-                        <label>Номер документа</label>
-                        <Input type='number'/>
+                        id="documentNumber"
+                        error={!!errors?.documentNumber}>
+                        <Form.Input
+                            required
+                            type="number"
+                            name="documentNumber"
+                            label="Номер документа"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                                await trigger(name)
+                            }}
+                        />
+                        {errors?.documentNumber?.message}
+                        {/* <label>Дата рождения</label>
+                        <Input placeholder="__-__-____"/> */}
                     </Form.Field>
                     <Form.Field
-                        required
-                        id="rate"
-                        name="rate">
-                        <label>Тариф</label>
-                        <Select options={rateOptions}/>
+                        error={!!errors?.rate}
+                        id="rate">
+                        <Form.Select
+                            required
+                            name="rate"
+                            options={rateOptions}
+                            label="Тариф"
+                            onChange={async (e, { name, value }) => {
+                                await setValue(name, value);
+                                await trigger(name);
+                            }}
+                        />
+                        <span>{errors?.rate?.message}</span>
                     </Form.Field>
                 </Form.Group>
                 <Form.Field>
@@ -140,7 +235,6 @@ export const TicketForm = () => {
                 </Form.Field>
             </Form>
             </div>
-            
         </Container>
     )
 }
