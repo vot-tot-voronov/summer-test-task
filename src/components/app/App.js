@@ -1,5 +1,5 @@
-import React from 'react'
-import {TicketOrder} from '../ticket-order/TicketOrder'
+import React from 'react';
+import {TicketOrder} from '../ticket-order/TicketOrder';
 
 export const App = () => {
     return (

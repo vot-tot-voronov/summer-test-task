@@ -1,10 +1,11 @@
-import React from 'react'
-import { Form, Button, Icon} from 'semantic-ui-react'
-import { useForm, Controller, useFieldArray } from 'react-hook-form'
-import { genderOptions, citizenship, typeOfDocument, rateOptions } from '../utils'
-import { HeaderField } from '../header-field/HeaderField'
-import { useData } from '../data-context/DataContext'
-import './form-field.css'
+import React from 'react';
+import { Form, Button, Icon} from 'semantic-ui-react';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { genderOptions, citizenship, typeOfDocument, rateOptions } from '../utils';
+import { HeaderField } from '../header-field/HeaderField';
+import { useData } from '../data-context/DataContext';
+import Swal from 'sweetalert2';
+import './form-field.css';
 
 export const FormField = () => {
     const {handleSubmit, errors, setValue, trigger, control} = useForm({
@@ -22,14 +23,29 @@ export const FormField = () => {
         control
     });
     const { setValues } = useData()
-    const submitForm = (data) => {
-        setValues(data)
-    }
+    const submitForm = async (data) => {
+        try {
+            const res = await fetch('https://webhook.site/958a6132-d38d-49b0-80d0-b1feba0cd7cf', {
+                method: 'POST',
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            if (res.status === 200) {
+                Swal.fire("Данные успешно отправленны", "Билеты придут Вам на почту", "success");
+                setValues(data);
+            }
+        } catch (error) {
+            Swal.fire("Что-то пошло не так", "Попробуйте еще раз", "error");
+        }
+    };
     const deletePassenger = (index) => {
         if (fields.length !== 1) {
-            remove(index)
+            remove(index);
         }
-    }
+    };
     return (
         <Form noValidate onSubmit={handleSubmit(submitForm)}>
             {fields.map((item, index) => {

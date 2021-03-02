@@ -1,6 +1,6 @@
-import React from 'react'
-import { Grid, Header, Button, Icon } from 'semantic-ui-react'
-import './header-field.css'
+import React from 'react';
+import { Grid, Header, Button, Icon } from 'semantic-ui-react';
+import './header-field.css';
 
 export const HeaderField = ({number, remove}) => {
     return (
