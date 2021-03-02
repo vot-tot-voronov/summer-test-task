@@ -1,10 +1,10 @@
 import React from 'react'
-import {TicketForm} from './TicketForm/TicketForm'
+import {TicketOrder} from '../ticket-order/TicketOrder'
 
 export const App = () => {
     return (
         <>
-            <TicketForm />
+            <TicketOrder />
         </>
     )
 }
